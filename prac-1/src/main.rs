@@ -1,6 +1,6 @@
 use std::{io, process};
 
-use lab_1_cotuh::*;
+use prac_1_cotuh::*;
 
 mod config;
 use config::*;

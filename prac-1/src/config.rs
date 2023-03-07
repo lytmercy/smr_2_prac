@@ -1,4 +1,4 @@
-use lab_1_cotuh::*;
+use prac_1_cotuh::*;
 
 pub struct Config {
     pub code_phrase: String,
