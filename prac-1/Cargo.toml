@@ -1,0 +1,10 @@
+[package]
+name = "lab-1_cotuh"
+version = "0.3.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+csv = "1.2.0"
+crossterm = "0.26.0"
