@@ -46,11 +46,11 @@ def calculate_bigrams(string_line):
     return bigrams_dict
 
 
-def calculate_statistics(file_path):
+def calculate_training_statistics(file_path):
     """
-    Help function for calculating statistics of file with strings.
-    :param file_path: string of path to file with text;
-    :return: dictionary with statistics of bi-grams.
+    Help function for calculating statistics of first file for training statistics;
+    :param file_path: string of path to file with training text;
+    :return: dictionary with training statistics of bi-grams.
     """
     # Calculate statistics
     with open(file_path, 'r', encoding="utf-8") as file:
@@ -63,7 +63,12 @@ def calculate_statistics(file_path):
 
 
 def calculate_inference_statistics(file_path, train_statistics):
-    """"""
+    """
+    Help function for calculating statistics of second and third file of adequate and inadequate text;
+    :param file_path: string of path to file with text;
+    :param train_statistics: dictionary with training statistics of bi-grams;
+    :return: array with coefficient of adaptability for each line from file with text.
+    """
     # Calculate statistics
     with open(file_path, 'r', encoding="utf-8") as file:
         # Read data per line from file to list of lines
@@ -79,16 +84,16 @@ def calculate_inference_statistics(file_path, train_statistics):
     return coef_per_line
 
 
-def calculate_r_threshold_statistics(train_statistics):
+def calculate_r_threshold(train_statistics):
     """
-
-    :param train_statistics:
-    :return:
+    Help function for calculating value of R threshold;
+    :param train_statistics: dictionary with training statistics of bi-grams;
+    :return: integer value of R threshold.
     """
     # Calculate coefficient of adaptability for correct phrases
-    correct_s_phrases = calculate_inference_statistics("../input/second_file_correct.txt", train_statistics)
-    # Calculate coefficient of adaptability for correct phrases
-    incorrect_p_phrases = calculate_inference_statistics("../input/third_file_incorrect.txt", train_statistics)
+    correct_s_phrases = calculate_inference_statistics("input/second_file_correct.txt", train_statistics)
+    # Calculate coefficient of adaptability for incorrect phrases
+    incorrect_p_phrases = calculate_inference_statistics("input/third_file_incorrect.txt", train_statistics)
 
     # Calculate R threshold for those statistics
     r_threshold = threshold_r(correct_s_phrases, incorrect_p_phrases)
@@ -97,19 +102,37 @@ def calculate_r_threshold_statistics(train_statistics):
 
 
 def calculate_q_coef_adaptability(train_statistics, line_text):
-    """"""
+    """
+    Help function for calculating Q coefficient of adaptability for input text from user;
+    :param train_statistics: dictionary with training statistics of bigrams;
+    :param line_text: string data of input text from user;
+    :return:
+    """
+    # Calculate bigrams for input text
     line_bigrams = calculate_bigrams(line_text)
-    return int(coef_adaptability(line_bigrams, train_statistics))
+    # Calculate Q coefficient of adaptability for input text from user
+    q_coef = coef_adaptability(line_bigrams, train_statistics)
+
+    return int(q_coef)
 
 
 def save_r_threshold(r_threshold, file_path):
-    """"""
+    """
+    Function for saving value of R threshold to txt file;
+    :param r_threshold: value of R threshold in integer type;
+    :param file_path: string of path to file;
+    """
     with open(file_path, 'w') as file:
         file.write(str(r_threshold))
 
 
 def read_r_threshold(file_path):
-    """"""
+    """
+    Function for read value of R threshold from txt file;
+    :param file_path: string of path to file;
+    :return: integer value of R threshold.
+    """
+    # Reading value from file
     with open(file_path, 'r') as file:
         r_threshold = int(file.read())
 
@@ -117,14 +140,22 @@ def read_r_threshold(file_path):
 
 
 def save_statistics(statistics, file_path):
-    """"""
+    """
+    Function for saving dictionary of bigrams statistics for training text to json file;
+    :param statistics: dictionary with training statistics of bigrams;
+    :param file_path: string of path to file;
+    """
     with open(file_path, 'w') as file:
         # Use the json.dump() function to write the dictionary to the file
         json.dump(statistics, file)
 
 
 def read_statistics(file_path):
-    """"""
+    """
+    Function for read value of training statistics of bigrams from json file to dictionary;
+    :param file_path: string of path to file;
+    :return: dictionary with training statistics of bigrams.
+    """
     with open(file_path, 'r') as file:
         # Use the json.load() function to read the dictionary from the file
         statistics = json.load(file)

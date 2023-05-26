@@ -3,60 +3,82 @@ import os
 from time import sleep
 
 # Importing own written functions
-from utils import calculate_statistics, calculate_r_threshold_statistics, calculate_q_coef_adaptability
+from utils import calculate_training_statistics, calculate_r_threshold, calculate_q_coef_adaptability
 from utils import save_r_threshold, read_r_threshold, save_statistics, read_statistics
 
 
 def form_statistics_and_show():
-    """"""
-    train_statistics = calculate_statistics("../input/first_file_statistics.txt")
+    """
+    Function for form and show training statistics in console;
+    """
+    # Calculating training statistics
+    train_statistics = calculate_training_statistics("input/first_file_statistics.txt")
     line_with_5_keys = ""
 
+    # Cleaning console
     os.system("cls" if os.name == 'nt' else 'clear')
 
+    # Show training statistics
     print("=== Train Statistics ===")
     for i, (key, value) in enumerate(train_statistics.items()):
         line_with_5_keys += f"{key}:{value}, "
         if i % 5 == 0:
             print(line_with_5_keys)
             line_with_5_keys = ""
+
     sleep(5)
     os.system("cls" if os.name == 'nt' else 'clear')
 
-    save_statistics(train_statistics, "../output/statistics.json")
+    # Saving training statistics
+    save_statistics(train_statistics, "output/statistics.json")
 
 
 def calc_r_threshold_and_show():
-    """"""
+    """
+    Function for calculating and showing value of R threshold in console;
+    """
     os.system("cls" if os.name == 'nt' else 'clear')
 
-    train_statistics = read_statistics("../output/statistics.json")
-    r_threshold = calculate_r_threshold_statistics(train_statistics)
-
+    # Reading training statistics from file
+    train_statistics = read_statistics("output/statistics.json")
+    # Calculating value of R threshold
+    r_threshold = calculate_r_threshold(train_statistics)
+    # Show value of R threshold
     print(f"\nR : {r_threshold}")
 
     sleep(5)
     os.system("cls" if os.name == 'nt' else 'clear')
 
-    save_r_threshold(r_threshold, "../output/r_threshold.txt")
+    # Saving value of R threshold
+    save_r_threshold(r_threshold, "output/r_threshold.txt")
 
 
 def check_new_text():
-    """"""
-    train_statistics = read_statistics("../output/statistics.json")
-    r_threshold = read_r_threshold("../output/r_threshold.txt")
+    """
+    Function for checking input text that user enter in console;
+    """
+    # Reading training statistics from file
+    train_statistics = read_statistics("output/statistics.json")
+    # Reading value of R threshold from file
+    r_threshold = read_r_threshold("output/r_threshold.txt")
 
+    # Clearing console
     os.system("cls" if os.name == 'nt' else 'clear')
+    # Showing value of R threshold
     print("|==================|")
     print(f"R : {r_threshold}")
     print("|==================|")
 
+    # User enter the text
     input_text = input("|========Write your text line========|\n")
+    # Calculating Q coefficient of adaptability
     q_coef = calculate_q_coef_adaptability(train_statistics, input_text)
 
+    # Showing Q coefficient of adaptability
     print("|==================|")
     print(f"Q : {q_coef}")
 
+    # Showing result of checking the text for adequacy
     if q_coef >= r_threshold:
         print("Your text is adequate")
     elif q_coef < r_threshold:
