@@ -14,7 +14,7 @@ def run():
                  [sg.Button("Decompose image", k="dec-img-act")]]
 
     img_size = (500, 300)
-    clr_size = (300, 200)
+    clr_size = (500, 300)
     # Define image column of content of this part
     image_col = [[sg.Text("Original image")],
                  [sg.Image(size=img_size, k="origin-image")],
@@ -24,11 +24,11 @@ def run():
                   sg.Image(size=img_size, k="blue-image")]]
 
     # Construct full layout from all columns
-    c_layout = [[sg.Column(image_col, element_justification='c', size=(930, 580)),
+    c_layout = [[sg.Column(image_col, element_justification='c', size=(1500, 650)),
                  sg.VSeparator(),
                  sg.Column(right_col, element_justification='c')]]
 
-    c_window = sg.Window("Prac-3 -- part-c", c_layout, resizable=False, size=(1330, 580))
+    c_window = sg.Window("Prac-3 -- part-c", c_layout, resizable=False, size=(1900, 650))
 
     while True:
         event, values = c_window.read()

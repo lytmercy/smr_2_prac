@@ -21,8 +21,8 @@ def run():
                             size=(25, 15), enable_events=True, k="alpha-slider"),
                   sg.Text("Second Image")]]
 
-    frst_img_size = (350, 300)
-    scnd_img_size = (350, 300)
+    frst_img_size = (500, 300)
+    scnd_img_size = (500, 300)
     new_img_size = (500, 300)
     # Define image column of content of this part
     image_col = [[sg.Text("Original images")],
@@ -31,11 +31,11 @@ def run():
                  [sg.Image(size=new_img_size, k="new-image")]]
 
     # Construct full layout from all columns
-    d_layout = [[sg.Column(image_col, element_justification='c', size=(750, 650)),
+    d_layout = [[sg.Column(image_col, element_justification='c', size=(1030, 650)),
                  sg.VSeparator(),
                  sg.Column(right_col, element_justification='c')]]
 
-    d_window = sg.Window("Prac-3 -- part-d", d_layout, resizable=False, size=(1250, 650))
+    d_window = sg.Window("Prac-3 -- part-d", d_layout, resizable=False, size=(1500, 650))
 
     while True:
         event, values = d_window.read()

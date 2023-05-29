@@ -1,6 +1,6 @@
 from PIL import Image, ImageOps
 import numpy as np
-from scipy import signal
+from scipy import signal, ndimage
 import io
 
 
@@ -122,48 +122,193 @@ def merging_images(image_one, image_two, alpha):
     return Image.fromarray(new_image)
 
 
-def blur_image(image):
+def blur_image(image, div=1):
     """
 
     :param image:
+    :param div:
     :return:
     """
-    mu, sigma = 0, 0.1  # mean and standard deviation
-    matrix_size = (5, 5)
+    mu, sigma = 0.03, 0.001  # mean and standard deviation
+    blur_kernel_size = (5, 5)
     seed = 17
 
-    blur_matrix = np.random.default_rng(seed).normal(mu, sigma, matrix_size)
+    blur_kernel = np.random.default_rng(seed).normal(mu, sigma, blur_kernel_size)
 
-    signal.windows.gaussian()
+    image_array = np.array(image)
+    pad_image = np.pad(image_array, pad_width=((2, 2), (2, 2), (0, 0)), mode="symmetric")
+
+    blured_image = image_array.copy()
+
+    # Iter through all pixels in image
+    for i in range(image_array.shape[0]):
+        for j in range(image_array.shape[1]):
+            for clr in range(image_array.shape[2]):
+
+                image_patch = pad_image[i:i + blur_kernel_size[0], j:j + blur_kernel_size[1], clr]
+
+                blured_image[i, j, clr] = np.sum(np.multiply(image_patch, blur_kernel))\
+                                            .clip(min=0, max=255) * (1/div)
+
+    return Image.fromarray(blured_image)
 
 
+def res_up_image(image, div=1):
+    """
+
+    :param image:
+    :param div:
+    :return:
+    """
+    res_up_kernel = np.array([[-1, -1, -1],
+                              [-1, 9, -1],
+                              [-1, -1, -1]])
+
+    image_array = np.array(image)
+    pad_image = np.pad(image_array, pad_width=((1, 1), (1, 1), (0, 0)), mode="symmetric")
+
+    res_up_image = image_array.copy()
+
+    # Iter through all pixels in image
+    for i in range(image_array.shape[0]):
+        for j in range(image_array.shape[1]):
+            for clr in range(image_array.shape[2]):
+
+                image_patch = pad_image[i:i + res_up_kernel.shape[0], j:j + res_up_kernel.shape[1], clr]
+
+                res_up_image[i, j, clr] = np.sum(np.multiply(image_patch, res_up_kernel)).clip(min=0, max=255) * (1/div)
+
+    return Image.fromarray(res_up_image)
 
 
+def median_image(image, kernel_size):
+    """
 
-def res_up_image():
+    :param image:
+    :param kernel_size:
+    :return:
+    """
+    # Set kernel size for median filter
+    median_kernel_size = ()
+    match kernel_size:
+        case 3:
+            median_kernel_size = (3, 3)
+        case 4:
+            median_kernel_size = (4, 4)
+        case 5:
+            median_kernel_size = (5, 5)
+
+    image_array = np.array(image)
+    pad_image = np.pad(image_array, pad_width=((1, 1), (1, 1), (0, 0)), mode="symmetric")
+
+    # Iter through all pixels in image
+    for i in range(image_array.shape[0]):
+        for j in range(image_array.shape[1]):
+            for clr in range(image_array.shape[2]):
+
+                median_kernel = pad_image[i:i + median_kernel_size[0], j:j + median_kernel_size[1], clr]
+
+                median_value = int(np.median(median_kernel))
+
+                image_array[i, j, clr] = median_value
+
+    return Image.fromarray(image_array)
+
+
+def erosion_image(image):
     """"""
-    pass
+    erosion_filter = np.array([[0, 0, 1, 0, 0],
+                               [0, 1, 1, 1, 0],
+                               [1, 1, 1, 1, 1],
+                               [0, 1, 1, 1, 0],
+                               [0, 0, 1, 0, 0]])
+
+    image_array = np.array(image)
+    pad_image = np.pad(image_array, pad_width=((2, 2), (2, 2), (0, 0)), mode="symmetric")
+
+    erosioned_image = image_array.copy()
+
+    # Iter through all pixels in image
+    for i in range(image_array.shape[0]):
+        for j in range(image_array.shape[1]):
+            for clr in range(image_array.shape[2]):
+
+                image_patch = pad_image[i:i + erosion_filter.shape[0], j:j + erosion_filter.shape[1], clr]
+
+                erosion_patch = np.multiply(image_patch, erosion_filter)
+
+                erosioned_image[i, j, clr] = np.min(erosion_patch[np.nonzero(erosion_patch)])
+
+    return Image.fromarray(erosioned_image)
 
 
-def median_image():
+def build_up_image(image):
     """"""
-    pass
+    build_up_filter = np.array([[0, 0, 1, 0, 0],
+                                [0, 1, 1, 1, 0],
+                                [1, 1, 1, 1, 1],
+                                [0, 1, 1, 1, 0],
+                                [0, 0, 1, 0, 0]])
+
+    image_array = np.array(image)
+    pad_image = np.pad(image_array, pad_width=((2, 2), (2, 2), (0, 0)), mode="symmetric")
+
+    builded_up_image = image_array.copy()
+
+    # Iter through all pixels in image
+    for i in range(image_array.shape[0]):
+        for j in range(image_array.shape[1]):
+            for clr in range(image_array.shape[2]):
+
+                image_patch = pad_image[i:i + build_up_filter.shape[0], j:j + build_up_filter.shape[1], clr]
+
+                erosion_patch = np.multiply(image_patch, build_up_filter)
+
+                builded_up_image[i, j, clr] = np.max(erosion_patch[np.nonzero(erosion_patch)])
+
+    return Image.fromarray(builded_up_image)
 
 
-def erosion_image():
+def sobel_image(image):
     """"""
-    pass
+    sobel_gy_filter = np.array([[-1, -2, -1],
+                                [0, 0, 0],
+                                [1, 2, 1]])
+    sobel_gx_filter = np.array([[-1, 0, 1],
+                                [-2, 0, 2],
+                                [-1, 0, 1]])
+
+    image_array = np.array(image)
+
+    image_grey = image_array[:, :, 0]/3 + image_array[:, :, 1]/3 + image_array[:, :, 2]/3
+    # image_grey = image_array[:, :, 0] * 0.07 + image_array[:, :, 1] * 0.72 + image_array[:, :, 2] * 0.21
+
+    pad_image = np.pad(image_grey, pad_width=((1, 1), (1, 1)), mode="symmetric")
+
+    sobel_image_array = np.zeros(image_grey.shape, dtype=np.uint8)
+
+    # Iter through all pixels in image
+    for i in range(image_grey.shape[0]):
+        for j in range(image_grey.shape[1]):
+
+            y_image_patch = pad_image[i:i + sobel_gy_filter.shape[0], j:j + sobel_gy_filter.shape[1]]
+            x_image_patch = pad_image[i:i + sobel_gx_filter.shape[0], j:j + sobel_gx_filter.shape[1]]
+
+            gy_patch = np.multiply(y_image_patch, sobel_gy_filter)
+            gx_patch = np.multiply(x_image_patch, sobel_gx_filter)
+
+            gy_power = np.power(np.sum(gy_patch), 2)
+            gx_power = np.power(np.sum(gx_patch), 2)
+
+            gxy_sqrt = np.sqrt(gx_power + gy_power)
+
+            sobel_image_array[i, j] = gxy_sqrt.clip(min=0, max=255)
+
+    return Image.fromarray(sobel_image_array)
 
 
-def build_up_image():
+def embedding_watermark(image, watermark):
     """"""
-    pass
-
-
-def sobel_image():
-    """"""
-    pass
-
 
 
 

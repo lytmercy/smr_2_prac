@@ -18,7 +18,7 @@ def main():
                    [sg.Button("Part-b"), sg.Button("Part-d"), sg.Button("Part-f")],
                    [sg.Button("Quit")]]
 
-    main_window = sg.Window("Prac-3 Py-implementation", main_layout, size=(310, 130))
+    main_window = sg.Window("Prac-3 Py-implementation", main_layout, element_justification='c', size=(310, 130))
 
     while True:
         event, values = main_window.read()

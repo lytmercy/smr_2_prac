@@ -19,7 +19,7 @@ def run():
                  [sg.Button("Sobel filter", k="sobel-act")]]
 
     img_size = (500, 300)
-    flt_size = (300, 200)
+    flt_size = (500, 300)
     # Define image column of content of this part
     image_col = [[sg.Text("Original image")],
                  [sg.Image(size=img_size, k="origin-image")],
@@ -29,11 +29,11 @@ def run():
                   sg.Image(size=flt_size, k="filtered-2-image")]]
 
     # Construct full layout from all columns
-    e_layout = [[sg.Column(image_col, element_justification='c', size=(930, 580)),
+    e_layout = [[sg.Column(image_col, element_justification='c', size=(1520, 690)),
                  sg.VSeparator(),
                  sg.Column(right_col, element_justification='c')]]
 
-    e_window = sg.Window("Prac-3 -- part-e", e_layout, resizable=False, size=(1330, 580))
+    e_window = sg.Window("Prac-3 -- part-e", e_layout, resizable=False, size=(1920, 690))
 
     while True:
         event, values = e_window.read()
@@ -64,24 +64,39 @@ def run():
             image_path = values["file-path"]
             image = open_resize(image_path, resize=img_size)
 
-            blured_image = blur_image(image)
+            medianed_image = median_image(image, 3)
 
-            e_window["filtered-0-image"].update(data=convert_to_bytes(blured_image))
+            e_window["filtered-0-image"].update()
+            e_window["filtered-1-image"].update(data=convert_to_bytes(medianed_image))
+            e_window["filtered-2-image"].update()
 
         if event == "erosion-act":
             image_path = values["file-path"]
             image = open_resize(image_path, resize=img_size)
 
-            blured_image = blur_image(image)
+            erosioned_image = erosion_image(image)
 
-            e_window["filtered-1-image"].update(data=convert_to_bytes(bh_res_image))
+            e_window["filtered-0-image"].update(data=convert_to_bytes(erosioned_image))
+            e_window["filtered-1-image"].update()
+            e_window["filtered-2-image"].update()
 
         if event == "build-up-act":
             image_path = values["file-path"]
             image = open_resize(image_path, resize=img_size)
 
-            blured_image = blur_image(image)
+            builded_up_image = build_up_image(image)
 
-            e_window["filtered-2-image"].update(data=convert_to_bytes(h_res_image))
+            e_window["filtered-1-image"].update()
+            e_window["filtered-2-image"].update(data=convert_to_bytes(builded_up_image))
+
+        if event == "sobel-act":
+            image_path = values["file-path"]
+            image = open_resize(image_path, resize=img_size)
+
+            sobeled_image = sobel_image(image)
+
+            e_window["filtered-0-image"].update()
+            e_window["filtered-1-image"].update(data=convert_to_bytes(sobeled_image))
+            e_window["filtered-2-image"].update()
 
     e_window.close()
