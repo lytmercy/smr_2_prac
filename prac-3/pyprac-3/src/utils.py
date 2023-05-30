@@ -307,8 +307,38 @@ def sobel_image(image):
     return Image.fromarray(sobel_image_array)
 
 
-def embedding_watermark(image, watermark):
+def embed_extract_watermark(image, watermark, pixel_bit=-1):
     """"""
+    image_array = np.array(image)
 
+    watermark_array = np.array(watermark)
+    watermark_array = watermark_array >= 128
+    watermark_array = np.array(watermark_array[:, :, 0], dtype=np.uint8)
+
+    im_height, im_width = image_array.shape[:2]
+    wm_height, wm_width = watermark_array.shape
+
+    if im_height == wm_height and im_width == wm_width:
+        for i in range(0, im_height):
+            for j in range(0, im_width):
+                image_pixel = image_array[i, j, 2]
+                # Binary operations
+                bin_pixel = list(np.binary_repr(image_pixel, 8))
+                # print(bin_pixel)
+                bin_xor_pixel = np.bitwise_xor([int(bin_pixel[pixel_bit])], [int(watermark_array[i, j])])
+                # print(bin_pixel[-1], watermark_array[i, j])
+                # print(bin_xor_pixel)
+                bin_pixel[pixel_bit] = str(bin_xor_pixel[0])
+                # print(''.join(bin_pixel))
+                # Set new pixel value to image
+                new_image_pixel = int(''.join(bin_pixel), 2)
+                print(image_pixel, new_image_pixel)
+                image_array[i, j, 2] = new_image_pixel
+    elif im_height > wm_height or im_width > wm_width:
+        pass
+    elif im_height < wm_height or im_width < wm_width:
+        pass
+
+    return Image.fromarray(image_array)
 
 
