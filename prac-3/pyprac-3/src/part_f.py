@@ -66,9 +66,9 @@ def run():
             origin_image = open_resize(origin_image_path, resize=img_size)
             watermark_image = open_resize(watermark_path, resize=watermark_size)
 
-            signed_image = embed_extract_watermark(origin_image, watermark_image, 2)
+            signed_image = embed_extract_watermark(origin_image, watermark_image, 4)
 
-            sign_path = "../output/signed.png"
+            sign_path = "../output/unsigned.png"
             signed_image.save(sign_path, format="PNG")
 
             f_window["signed-image"].update(data=convert_to_bytes(signed_image))
@@ -80,7 +80,10 @@ def run():
             origin_image = open_resize(origin_image_path, resize=img_size)
             watermark_image = open_resize(watermark_path, resize=watermark_size)
 
-            unsigned_image = embed_extract_watermark(origin_image, watermark_image, 2)
+            unsigned_image = embed_extract_watermark(origin_image, watermark_image, 4)
+
+            sign_path = "../output/signed.png"
+            signed_image.save(sign_path, format="PNG")
 
             f_window["unsigned-image"].update(data=convert_to_bytes(unsigned_image))
 
