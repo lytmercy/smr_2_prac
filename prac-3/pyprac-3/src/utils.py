@@ -1,6 +1,5 @@
 from PIL import Image, ImageOps
 import numpy as np
-from scipy import signal, ndimage
 import io
 
 
@@ -340,5 +339,3 @@ def embed_extract_watermark(image, watermark, pixel_bit=-1):
         pass
 
     return Image.fromarray(image_array)
-
-
